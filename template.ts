@@ -1,5 +1,6 @@
 import solve from "@/solve";
 import { stripIndents } from "common-tags";
+import { chain } from "lodash";
 
 solve({
   part1: {
