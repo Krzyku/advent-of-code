@@ -19,7 +19,7 @@ export async function solve({ part1, part2 }: { part1?: Part; part2?: Part }) {
   printBanner(year, day);
 
   const inputFile = Bun.file(`solutions/${year}/${day}/input.txt`);
-  const input = await inputFile.text();
+  const input = (await inputFile.text()).trim();
 
   solvePart(1, input, part1);
   console.log();
@@ -38,7 +38,7 @@ function solvePart(partNumber: 1 | 2, input: string, part?: Part) {
   let testsPassed = true;
   if (part.tests) {
     part.tests.forEach((test, i) => {
-      const result = part.fn(test.input);
+      const result = part.fn(test.input.trim());
       const success = result === test.expected;
       testsPassed = testsPassed && success;
       console.log(
