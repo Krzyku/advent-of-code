@@ -9,7 +9,7 @@ solve({
         expected: 0,
       },
     ],
-    fn: () => {
+    fn: (input) => {
       return 0;
     },
   },
@@ -20,7 +20,7 @@ solve({
         expected: 0,
       },
     ],
-    fn: () => {
+    fn: (input) => {
       return 0;
     },
   },
