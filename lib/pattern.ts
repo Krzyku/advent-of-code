@@ -9,3 +9,7 @@ export const matchOverlapping = (input: string, pattern: RegExp): string[] => {
 
   return result;
 };
+
+export const extractNumbers = (text: string) => {
+  return text.match(/-?\d+/g)?.map(Number) ?? [];
+};
