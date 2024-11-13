@@ -2,27 +2,31 @@ import solve from "@/solve";
 import { stripIndents } from "common-tags";
 import { chain } from "lodash";
 
+const exampleInput = stripIndents`
+
+`;
+
 solve({
   part1: {
     tests: [
       {
-        input: stripIndents``,
+        input: exampleInput,
         expected: 0,
       },
     ],
     fn: (input) => {
-      return 0;
+      return -1;
     },
   },
   part2: {
     tests: [
       {
-        input: stripIndents``,
+        input: exampleInput,
         expected: 0,
       },
     ],
     fn: (input) => {
-      return 0;
+      return -1;
     },
   },
 });
