@@ -1,7 +1,7 @@
 import { toLines } from "@/parse";
 import solve from "@/solve";
 import { stripIndents } from "common-tags";
-import { chain, countBy, sortBy } from "lodash";
+import { countBy } from "lodash";
 
 const exampleInput = stripIndents`
 32T3K 765

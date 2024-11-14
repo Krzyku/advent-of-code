@@ -26,3 +26,22 @@ export const quadratic = (a: number, b: number, c: number) => {
 
   return [(-b - sqrt) / denominator, (-b + sqrt) / denominator];
 };
+
+export const greatestCommonDivisor = (a: number, b: number): number => {
+  if (b === 0) {
+    return a;
+  }
+
+  return greatestCommonDivisor(b, a % b);
+};
+
+export const leastCommonMultiple = (...arr: number[]) => {
+  let lcm = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    const a = lcm;
+    const b = arr[i];
+    const gcdVal = greatestCommonDivisor(a, b);
+    lcm = (lcm * arr[i]) / gcdVal;
+  }
+  return lcm;
+};
