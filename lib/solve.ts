@@ -87,6 +87,8 @@ function printBanner(year: string, day: string) {
       )
   );
   console.log(kleur.cyan(`~`.repeat(40)));
+  console.log(`./solutions/${year}/${day}/main.ts`);
+  console.log(`https://adventofcode.com/${year}/day/${Number(day)}`);
   console.log();
 }
 

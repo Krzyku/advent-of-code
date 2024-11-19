@@ -1,5 +1,6 @@
 import { shoelaceFormula } from "@/algorithm/shoelace-formula";
 import solve from "@/solve";
+import { Grid } from "@/structures/grid";
 import { stripIndents } from "common-tags";
 
 const exampleInput = stripIndents`
@@ -39,6 +40,7 @@ const OPPOSITE_DIR: Record<Direction, Direction> = {
 };
 
 function canConnect(a: Pipe, b: Pipe, dir: Direction) {
+  // @ts-expect-error
   if (a === "." || b === ".") {
     return false;
   }
@@ -48,37 +50,30 @@ function canConnect(a: Pipe, b: Pipe, dir: Direction) {
   return canExit && canEnter;
 }
 
-function findStart(grid: string[][]) {
-  const y = grid.findIndex((row) => row.includes("S"));
-  const x = grid[y].indexOf("S");
-
+function findStart(grid: Grid<string>, { x, y }: { x: number; y: number }) {
   const shape = ALL_PIPES.find((pipe) => {
     return PIPES[pipe].every((dir) => {
       const [dx, dy] = DIRECTION_DELTA[dir];
       const nx = x + dx;
       const ny = y + dy;
-      const nextPipe = grid[ny]?.[nx];
+      const nextPipe = grid.get({ x: nx, y: ny });
       return canConnect(pipe, nextPipe as Pipe, dir);
     });
   });
 
-  if (!shape) {
-    throw new Error("No start found");
-  }
-
-  return { x, y, shape };
+  return shape;
 }
 
-function findPath(grid: string[][], start: { x: number; y: number }) {
+function findPath(grid: Grid<string>, start: { x: number; y: number }) {
   const path = [start];
   let position = start;
-  let direction = PIPES[grid[start.y][start.x] as Pipe][0];
+  let direction = PIPES[grid.get(start) as Pipe][0];
 
   while (true) {
     const [dx, dy] = DIRECTION_DELTA[direction];
     const nx = position.x + dx;
     const ny = position.y + dy;
-    const nextPipe = grid[ny]?.[nx] as Pipe;
+    const nextPipe = grid.get({ x: nx, y: ny }) as Pipe;
 
     if (start.x === nx && start.y === ny) {
       return path;
@@ -107,12 +102,13 @@ solve({
       },
     ],
     fn: (input) => {
-      const grid = input.split("\n").map((row) => row.split(""));
+      const grid = Grid.fromString(input);
+      const startPosition = grid.find(({ value }) => value === "S")!;
 
-      const start = findStart(grid);
-      grid[start.y][start.x] = start.shape;
+      const startShape = findStart(grid, startPosition);
+      grid.set(startPosition, startShape!);
 
-      const path = findPath(grid, start);
+      const path = findPath(grid, startPosition);
       return path.length / 2;
     },
   },
@@ -134,14 +130,14 @@ solve({
       },
     ],
     fn: (input) => {
-      const grid = input.split("\n").map((row) => row.split(""));
+      const grid = Grid.fromString(input);
+      const startPosition = grid.find(({ value }) => value === "S")!;
+      const startShape = findStart(grid, startPosition);
+      grid.set(startPosition, startShape!);
 
-      const start = findStart(grid);
-      grid[start.y][start.x] = start.shape;
-
-      const path = findPath(grid, start);
+      const path = findPath(grid, startPosition);
       const vertices = path
-        .filter(({ x, y }) => !["|", "-"].includes(grid[y][x]))
+        .filter(({ x, y }) => !["|", "-"].includes(grid.get({ x, y }) as Pipe))
         .map(({ x, y }) => [x, y] as [number, number]);
 
       /*
