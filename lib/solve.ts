@@ -38,7 +38,7 @@ function solvePart(partNumber: 1 | 2, input: string, part?: Part) {
   let testsPassed = true;
   if (part.tests) {
     part.tests.forEach((test, i) => {
-      const result = part.fn(test.input.trim());
+      const { result, elapsed } = withTime(() => part.fn(test.input.trim()));
       const success = result === test.expected;
       testsPassed = testsPassed && success;
       console.log(
@@ -50,6 +50,8 @@ function solvePart(partNumber: 1 | 2, input: string, part?: Part) {
         console.log(`${tab(2)}Expected: ${test.expected}`);
         console.log(`${tab(2)}Got:      ${result}`);
       }
+      console.log(kleur.gray(`${tab(2)}Elapsed: ${elapsed.toFixed(2)}ms`));
+
       console.log();
     });
   }
@@ -59,15 +61,20 @@ function solvePart(partNumber: 1 | 2, input: string, part?: Part) {
     return;
   }
 
-  const now = performance.now();
-  const result = part.fn(input);
-  const elapsed = performance.now() - now;
+  const { result, elapsed } = withTime(() => part.fn(input));
   const label = kleur.blue(`${tab()}Part ${partNumber}:`);
   const fullResult = kleur.bold().white(`${result} [${formatResult(result)}]`);
   console.log(`${label} ${fullResult}`);
   console.log(kleur.gray(`${tab()}Elapsed: ${elapsed.toFixed(2)}ms`));
 
   console.log();
+}
+
+function withTime<T>(fn: () => T): { result: T; elapsed: number } {
+  const now = performance.now();
+  const result = fn();
+  const elapsed = performance.now() - now;
+  return { result, elapsed };
 }
 
 function formatResult(result: Result) {
