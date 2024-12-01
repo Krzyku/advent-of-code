@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Load environment variables
 source .env
@@ -23,6 +24,8 @@ if [ $day -lt 1 ] || [ $day -gt 25 ]; then
     echo "Day must be between 1 and 25"
     exit 1
 fi
+
+bun ./countdown.ts $year $day
 
 # Add leading zero to day
 day_with_leading_zero=$day
