@@ -47,12 +47,7 @@ solve({
           const [a, b] = extractNumbers(match);
           return acc + a * b;
         }
-        if (match.startsWith("do")) {
-          enabled = true;
-        }
-        if (match.startsWith("don't")) {
-          enabled = false;
-        }
+        enabled = match.startsWith("do") && !match.startsWith("don't");
         return acc;
       }, 0);
     },
