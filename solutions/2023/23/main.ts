@@ -64,7 +64,7 @@ const isEqual = (a: Pos, b: Pos) => a.x === b.x && a.y === b.y;
 function solveMaze(maze: string[][], start: Pos, end: Pos) {
   let longestPath = 0;
 
-  async function step(pos: Pos, path: HashSet<Pos>) {
+  async function step(pos: Pos, path: HashSet<string, Pos>) {
     if (isEqual(pos, end)) {
       longestPath = Math.max(longestPath, path.size);
     }
@@ -78,7 +78,7 @@ function solveMaze(maze: string[][], start: Pos, end: Pos) {
     });
   }
 
-  step(start, new HashSet<Pos>(isEqual));
+  step(start, new HashSet<string, Pos>((p) => `${p.x},${p.y}`));
   return longestPath;
 }
 
