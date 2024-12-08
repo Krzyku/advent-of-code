@@ -48,4 +48,8 @@ export class Grid<T> {
   set({ x, y }: Position, value: T) {
     this.values[y][x] = value;
   }
+
+  isValidPosition({ x, y }: Position): boolean {
+    return x >= 0 && y >= 0 && x < this.width && y < this.height;
+  }
 }
