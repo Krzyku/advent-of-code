@@ -52,4 +52,8 @@ export class Grid<T> {
   isValidPosition({ x, y }: Position): boolean {
     return x >= 0 && y >= 0 && x < this.width && y < this.height;
   }
+
+  toString() {
+    return this.values.map((line) => line.join("")).join("\n");
+  }
 }
