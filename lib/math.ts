@@ -45,3 +45,5 @@ export const leastCommonMultiple = (...arr: number[]) => {
   }
   return lcm;
 };
+
+export const countDigits = (n: number) => Math.floor(Math.log10(n)) + 1;
