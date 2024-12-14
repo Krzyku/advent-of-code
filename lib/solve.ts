@@ -5,11 +5,12 @@ type Result = BigInt | number | string;
 type TestCase = {
   input: string;
   expected: Result;
+  params?: any;
 };
 
 type Part = {
   tests?: TestCase[];
-  fn: (input: string) => Result;
+  fn: (input: string, params?: any) => Result;
 };
 
 export async function solve({ part1, part2 }: { part1?: Part; part2?: Part }) {
@@ -38,7 +39,9 @@ function solvePart(partNumber: 1 | 2, input: string, part?: Part) {
   let testsPassed = true;
   if (part.tests) {
     part.tests.forEach((test, i) => {
-      const { result, elapsed } = withTime(() => part.fn(test.input.trim()));
+      const { result, elapsed } = withTime(() =>
+        part.fn(test.input.trim(), test.params)
+      );
       const success = result === test.expected;
       testsPassed = testsPassed && success;
       console.log(

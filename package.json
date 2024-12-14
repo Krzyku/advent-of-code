@@ -10,6 +10,7 @@
   "dependencies": {
     "@types/common-tags": "^1.8.4",
     "@types/lodash": "^4.17.13",
+    "canvas": "^3.0.0-rc3",
     "common-tags": "^1.8.2",
     "kleur": "^4.1.5",
     "lodash": "^4.17.21"
