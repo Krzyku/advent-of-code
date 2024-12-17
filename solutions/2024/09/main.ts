@@ -1,50 +1,54 @@
 import solve from "@/solve";
 import { stripIndents } from "common-tags";
-import { chain } from "lodash";
 
 const exampleInput = stripIndents`2333133121414131402`;
 
-type Block = { size: number; id: number | null };
+type Block =
+  | { size: number; type: "file"; id: number }
+  | { size: number; type: "free" };
 
-const printBlocks = (blocks: Block[]) =>
-  blocks
-    .map((b) => {
-      return String(b.id === null ? "." : b.id).repeat(b.size);
-    })
-    .join("");
-
-const createBlocks = (input: string) => {
-  let lastId = 0;
-  return input.split("").reduce((acc, n, i) => {
-    const isData = i % 2 === 0;
-    const size = Number(n);
-
-    if (size > 0) {
-      acc.push({
-        id: isData ? lastId : null,
-        size,
-      });
+const createBlocks = (input: string): Block[] => {
+  return input.split("").reduce((acc, char, i) => {
+    const size = Number(char);
+    if (size === 0) {
+      return acc;
     }
 
-    if (isData) {
-      lastId++;
+    if (i % 2 === 0) {
+      acc.push({ size, type: "file", id: Math.floor(i / 2) });
+    } else {
+      acc.push({ size, type: "free" });
     }
-
     return acc;
   }, [] as Block[]);
 };
 
-const checksum = (blocks: Block[]) =>
-  blocks.reduce(
-    (acc, block) => {
-      for (let j = 0; j < block.size; j++) {
-        acc.sum += acc.n * block.id!;
-        acc.n++;
+const drawBlocks = (blocks: Block[]) => {
+  return blocks
+    .map((block) => {
+      if (block.type === "file") {
+        return String(block.id).repeat(block.size);
       }
-      return acc;
-    },
-    { sum: 0, n: 0 }
-  ).sum;
+      return ".".repeat(block.size);
+    })
+    .join("");
+};
+
+const getChecksum = (blocks: Block[]) => {
+  let sum = 0;
+  let n = 0;
+
+  for (const block of blocks) {
+    if (block.type === "file" && block.size > 0) {
+      for (let i = 0; i < block.size; i++) {
+        sum += (n + i) * block.id!;
+      }
+    }
+    n += block.size;
+  }
+
+  return sum;
+};
 
 solve({
   part1: {
@@ -55,33 +59,41 @@ solve({
       },
     ],
     fn: (input) => {
-      const blocks = createBlocks(input);
+      let blocks = createBlocks(input);
 
-      let i = 0;
-      let j = blocks.length - 1;
+      while (true) {
+        const nextFreeBlockIdx = blocks.findIndex(
+          ({ type }) => type === "free"
+        );
+        const lastFileBlockIdx = blocks.findLastIndex(
+          ({ type }) => type === "file"
+        );
 
-      while (i < j) {
-        const left = blocks[i];
-        const right = blocks[j];
-
-        if (left.id !== null || left.size === 0) {
-          i++;
-          continue;
+        if (nextFreeBlockIdx === -1 || nextFreeBlockIdx > lastFileBlockIdx) {
+          return getChecksum(blocks);
         }
 
-        if (right.id === null || right.size === 0) {
-          j--;
-          continue;
+        const free = blocks[nextFreeBlockIdx];
+        const file = blocks[lastFileBlockIdx];
+
+        const space = Math.min(free.size, file.size);
+        free.size -= space;
+        file.size -= space;
+
+        blocks.splice(nextFreeBlockIdx, 0, {
+          id: file.id,
+          size: space,
+          type: "file",
+        });
+
+        if (file.size === 0) {
+          blocks.splice(lastFileBlockIdx + 1, 1);
         }
 
-        const size = Math.min(left.size, right.size);
-        left.size -= size;
-        right.size -= size;
-        blocks.splice(i, 0, { size, id: right.id });
-        j++;
+        if (free.size === 0) {
+          blocks.splice(nextFreeBlockIdx + 1, 1);
+        }
       }
-
-      return checksum(blocks);
     },
   },
   part2: {
@@ -92,42 +104,27 @@ solve({
       },
     ],
     fn: (input) => {
-      const blocks = createBlocks(input);
+      let blocks = createBlocks(input);
+      const files = blocks.filter((b) => b.type === "file").reverse();
 
-      console.log(printBlocks(blocks));
+      for (const file of files) {
+        const spotIdx = blocks.findIndex(
+          (b) => b.type === "free" && b.size >= file.size
+        );
+        const idx = blocks.findIndex((b) => b === file);
 
-      let i = 1;
-      let j = blocks.length - 1;
-      while (j > 0) {
-        const free = blocks[i];
-        const data = blocks[j];
-
-        if (free.id !== null) {
-          i++;
-          continue;
-        }
-        if (data.id === null) {
-          j--;
+        if (spotIdx < 0 || spotIdx > idx) {
           continue;
         }
 
-        if (free.size >= data.size) {
-          blocks.splice(
-            i,
-            1,
-            { size: data.size, id: data.id },
-            { size: free.size - data.size, id: null }
-          );
-          blocks[j + 1] = { size: data.size, id: null };
-          i++;
-          console.log(printBlocks(blocks), i, j, blocks.length);
-        }
+        const spot = blocks[spotIdx];
 
-        i += 1;
-        j -= 1;
+        blocks[spotIdx] = { ...spot, size: spot.size - file.size };
+        blocks[idx] = { ...file, type: "free" };
+        blocks.splice(spotIdx, 0, { ...file });
       }
 
-      // return checksum(blocks);
+      return getChecksum(blocks);
     },
   },
 });
