@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="reset.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div style="display: flex">
+      <div style="flex: 1 1 auto">
+        <b>Paste input here</b>
+        <br />
+        <textarea name="input" id="input" rows="10">
+MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX
+        </textarea>
+
+        <ul id="colors-list"></ul>
+      </div>
+
+      <div style="flex: 1 1 auto">
+        <table id="table"></table>
+        <p id="position"></p>
+      </div>
+    </div>
+
+    <style>
+      body {
+        background-color: #282a36;
+        color: #f8f8f2;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 36px;
+      }
+
+      textarea {
+        background-color: #44475a;
+        color: #f8f8f2;
+      }
+
+      table {
+        border-collapse: collapse;
+        /* border-spacing: 0; */
+        /* overflow: hidden; */
+      }
+
+      td {
+        text-align: center;
+        vertical-align: bottom;
+        cursor: default;
+      }
+
+      td:hover {
+        background-color: #44475a;
+        font-weight: bold;
+      }
+    </style>
+    <script src="script.js"></script>
+  </body>
+</html>
