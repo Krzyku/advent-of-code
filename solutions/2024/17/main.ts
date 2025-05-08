@@ -13,12 +13,12 @@ Program: 0,1,5,4,3,0
 
 class Computer {
   constructor(
-    private registerA: number,
-    private registerB: number,
-    private registerC: number,
+    private registerA: bigint,
+    private registerB: bigint,
+    private registerC: bigint,
     private program: number[],
-    private pointer: number = 0,
-    public output: number[] = []
+    private pointer: number = 0n,
+    public output: bigint[] = []
   ) {}
 
   combo(operand: number) {
@@ -36,49 +36,49 @@ class Computer {
     }
   }
 
-  adv(operand: number) {
+  adv(operand: bigint) {
     this.registerA = Math.trunc(
-      this.registerA / Math.pow(2, this.combo(operand))
+      this.registerA / Math.pow(2n, this.combo(operand))
     );
-    this.pointer += 2;
+    this.pointer += 2n;
   }
 
-  bxl(operand: number) {
+  bxl(operand: bigint) {
     this.registerB ^= operand;
-    this.pointer += 2;
+    this.pointer += 2n;
   }
 
-  bst(operand: number) {
+  bst(operand: bigint) {
     this.registerB = this.combo(operand) % 8;
     this.pointer += 2;
   }
 
-  jnz(operand: number) {
-    if (this.registerA !== 0) {
+  jnz(operand: bigint) {
+    if (this.registerA !== 0n) {
       this.pointer = operand;
     } else {
       this.pointer++;
     }
   }
 
-  bxc(operand: number) {
+  bxc(operand: bigint) {
     this.registerB ^= this.registerC;
-    this.pointer += 2;
+    this.pointer += 2n;
   }
 
-  out(operand: number) {
-    this.output.push(this.combo(operand) % 8);
-    this.pointer += 2;
+  out(operand: bigint) {
+    this.output.push(this.combo(operand) % 8n);
+    this.pointer += 2n;
   }
 
-  bdv(operand: number) {
+  bdv(operand: bigint) {
     this.registerB = Math.trunc(
       this.registerA / Math.pow(2, this.combo(operand))
     );
     this.pointer += 2;
   }
 
-  cdv(operand: number) {
+  cdv(operand: bigint) {
     this.registerC = Math.trunc(
       this.registerA / Math.pow(2, this.combo(operand))
     );
@@ -92,13 +92,6 @@ class Computer {
 
       if (opcode === undefined) {
         break;
-      }
-
-      if (this.isFixMode) {
-        const idx = this.output.length - 1;
-        if (this.output[idx] !== this.program[idx]) {
-          break;
-        }
       }
 
       switch (opcode) {
@@ -155,6 +148,27 @@ solve({
   },
   part2: {
     tests: [],
-    fn: (input) => {},
+    fn: (input) => {
+      const [registries, program] = input.split("\n\n").map(extractNumbers);
+      const rawProgram = program.join(",");
+
+      let MAX = 8n ** 14n;
+      let a = 8n ** 13n;
+      do {
+        const computer = new Computer(
+          a,
+          BigInt(registries[1]),
+          BigInt(registries[2]),
+          program
+        );
+        computer.execute();
+        const output = computer.output.join(",");
+        if (output === rawProgram) {
+          console.log(a);
+          break;
+        }
+        a++;
+      } while (a < MAX);
+    },
   },
 });

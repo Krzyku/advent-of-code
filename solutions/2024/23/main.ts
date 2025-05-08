@@ -86,6 +86,66 @@ const findInterConnected = (computers: Map<string, Set<string>>) => {
   return interConnected;
 };
 
+const parseInput = (input: string) => {
+  const lines = input.split("\n");
+  const initialValues = new Map<string, number>();
+  const gates: string[] = [];
+
+  lines.forEach((line) => {
+    if (line.includes(":")) {
+      const [key, value] = line.split(": ");
+      initialValues.set(key, parseInt(value, 10));
+    } else if (line.includes("->")) {
+      gates.push(line);
+    }
+  });
+
+  return { initialValues, gates };
+};
+
+const evaluateGate = (
+  gate: string,
+  values: Map<string, number>
+): number | null => {
+  const [expression, result] = gate.split(" -> ");
+  const [left, operator, right] = expression.split(" ");
+
+  const leftValue = values.get(left) ?? null;
+  const rightValue = values.get(right) ?? null;
+
+  if (leftValue === null || rightValue === null) {
+    return null;
+  }
+
+  switch (operator) {
+    case "AND":
+      return leftValue & rightValue;
+    case "OR":
+      return leftValue | rightValue;
+    case "XOR":
+      return leftValue ^ rightValue;
+    default:
+      return null;
+  }
+};
+
+const findInconsistencies = (input: string) => {
+  const { initialValues, gates } = parseInput(input);
+  const values = new Map(initialValues);
+
+  for (const gate of gates) {
+    const [expression, result] = gate.split(" -> ");
+    const expectedValue = parseInt(result.slice(1), 10);
+    const evaluatedValue = evaluateGate(gate, values);
+
+    if (evaluatedValue !== null && evaluatedValue !== expectedValue) {
+      return `Inconsistency found in gate: ${gate}`;
+    }
+  }
+
+  return "No inconsistencies found";
+};
+
 solve({
   part1: {
     tests: [
@@ -145,3 +205,5 @@ solve({
     },
   },
 });
+
+console.log(findInconsistencies(exampleInput));
